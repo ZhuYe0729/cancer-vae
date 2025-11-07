@@ -1,7 +1,7 @@
 .DS_Store
 *.history
 *.o
-./cancer_gillespie_simulation
+./cancer_gillespie_simulation*
 ./cancer_gillespie_simulation.*
 *.so
 *.so.dylib
@@ -19,3 +19,11 @@ CHESS_0.0.0.9000.tar.gz
 Info.plist
 
 r_package/.Rhistory
+
+data/
+data_original/
+tmp/
+tmp2/
+vae/out/
+vae/wandb/
+thirdparts/

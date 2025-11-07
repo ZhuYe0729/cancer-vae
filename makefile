@@ -6,6 +6,9 @@ CC = g++
 #  -Wall turns on most, but not all, compiler warnings
 CFLAGS  = -g -Wall -O2 -fPIC -std=c++11
 CFLAGS += -I /usr/local/include
+CFLAGS += -I /root/wja/wja/project/CHESS.cpp/thirdparts/boost_1_89_0
+LFLAGS += -L/root/wja/wja/project/CHESS.cpp/thirdparts/boost_1_89_0/stage/lib
+
 
 # Options:
 ifeq ($(ALLOWDIEOUT), 1)
@@ -19,7 +22,8 @@ endif
 ifneq ($(NODISPLAY), 1)
 	CFLAGS += -D_DISPLAY_
         CFLAGS_X11 += -I/opt/X11/include
-	LFLAGS_X11 += -L/opt/X11/lib -lGL -lGLU -lGLUT
+	LFLAGS_X11 += -L/opt/X11/lib -lGL -lGLU -lglut
+# 	LFLAGS_X11 += -L/opt/X11/lib -lGL -lGLU -lGLUT
 endif
 
 # Classes:
@@ -46,10 +50,14 @@ TARGET = cancer_gillespie_simulation
 OTHER_TARGETS += $(R_PKG_NAME)_$(R_PKG_VERS).tar.gz
 
 # Make all targets:
-all: $(TARGET) $(OTHER_TARGETS)
+# all: $(TARGET) $(OTHER_TARGETS)
+# no use R
+all: $(TARGET)
 
+# $(TARGET): src/main.cpp $(CLASS_FILES_COMP) $(CLASS_FILES_HEADER)
+# 	$(CC) $(CFLAGS) $(CFLAGS_X11) $(LFLAGS) $(LFLAGS_X11) $(CLASS_FILES_COMP) src/main.cpp -o $@
 $(TARGET): src/main.cpp $(CLASS_FILES_COMP) $(CLASS_FILES_HEADER)
-	$(CC) $(CFLAGS) $(CFLAGS_X11) $(LFLAGS) $(LFLAGS_X11) $(CLASS_FILES_COMP) src/main.cpp -o $@
+	$(CC) $(CFLAGS) $(CFLAGS_X11) $(CLASS_FILES_COMP) src/main.cpp $(LFLAGS) $(LFLAGS_X11) -o $@
 
 %.o: %.cpp %.hpp
 	$(CC) $(CFLAGS) $(CFLAGS_X11) -c $< -o $@

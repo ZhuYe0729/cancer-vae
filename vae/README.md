@@ -1,0 +1,10 @@
+- data.py：生成原始的chess.cpp的数据
+- data_organize.py：基于原始的chess.cpp的数据生成真实的vaf
+- datasets.py:基于data_organize.py处理后的数据把有用的部分打包成Datasets，以及文件打包
+- eval_utils.py：一些基础eval的工具
+- model.py:模型架构和损失函数
+- modern.py:原始的vae训练minist
+- original.py:原始的vae训练minist
+- run.py：基于训练后的模型快速测试
+- train.py：训练脚本
+- data_original文件夹的check.py：检查data.py生成出错时的情况，出错后，可以通过check.py检查并强制删除对应文件夹，然后重复运行data.py
