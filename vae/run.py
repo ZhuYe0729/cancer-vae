@@ -5,14 +5,17 @@ import os
 from pathlib import Path
 import numpy as np
 import torch
+import matplotlib.pyplot as plt
 
 from model import TumorEvolutionModel
 from datasets import _parse_sim_params,_parse_vaf_distribution
 data_dir = Path('/root/data/wja/project/CHESS.cpp/data_original/data')
+result_dir = Path('/root/data/wja/project/CHESS.cpp/vae/vae_out')
 type_number = 2
 index = 0
 second_indexs = range(64)
 
+visual = True
 
 if __name__ == "__main__":
     # load model
@@ -58,11 +61,35 @@ if __name__ == "__main__":
             out = model(x_tensor)  # （100,2）
             mu = out[..., 0]      
             sigma = out[..., 1]
-            # 采样
-            sampled = torch.normal(mu, sigma).cpu().numpy()  # 从高斯分布中采样，得到(100,)的numpy数组
-            # 比较sampled和vaf_distribution，计算欧氏距离
-            euc_distance = np.linalg.norm(sampled - vaf_distribution)
-            pred_distances.append(euc_distance)
+            sampled = torch.normal(mu, sigma).cpu().numpy()
+
+        if visual:
+            base_save_dir = result_dir / f'{type_number}' / f'{index}' / 'base'
+            model_save_dir = result_dir / f'{type_number}' / f'{index}' / 'model'
+            base_save_dir.mkdir(parents=True, exist_ok=True)
+            model_save_dir.mkdir(parents=True, exist_ok=True)
+            x_axis = np.arange(len(vaf_distribution))
+
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.bar(x_axis, vaf_distribution, color='tab:blue')
+            ax.set_title(f'VAF Distribution #{second_index}')
+            ax.set_xlabel('Bin Index')
+            ax.set_ylabel('Frequency')
+            fig.tight_layout()
+            fig.savefig(str(base_save_dir / f'{second_index}.png'), dpi=200)
+            plt.close(fig)
+
+            fig, ax = plt.subplots(figsize=(8, 4))
+            ax.bar(x_axis, sampled, color='tab:orange')
+            ax.set_title(f'Sampled Distribution #{second_index}')
+            ax.set_xlabel('Bin Index')
+            ax.set_ylabel('Frequency')
+            fig.tight_layout()
+            fig.savefig(str(model_save_dir / f'{second_index}.png'), dpi=200)
+            plt.close(fig)
+
+        euc_distance = np.linalg.norm(sampled - vaf_distribution)
+        pred_distances.append(euc_distance)
     pred_distance = np.mean(pred_distances)
     print(f'Predicted max Euclidean distance between VAF distributions: {np.max(pred_distances):.6f}')
     print(f'Predicted min Euclidean distance between VAF distributions: {np.min(pred_distances):.6f}')
