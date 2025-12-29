@@ -37,20 +37,38 @@ from pathlib import Path
 from tqdm import tqdm
 
 
-# NUM_TYPE_CHOICES = [1, 2, 4, 8]
-# NUM_TYPE_CHOICES = [2, 4, 8]
-NUM_TYPE_CHOICES = [1, 2]
+
+NUM_TYPE_CHOICES = [1,2]  # 大于2就寄了，return code -11
+# 虽然有100个clone type，但是这里不能设置成100，不然会运行到一半就寄了，不知道为啥
+# 因此这里后面考虑仅仅把除了start time之外的设置为采样100个，这个会出现长度不对应，所以还是不行
+# 所以相当于只能够是所有的clone type都是一样的参数，同样的出现时间，或者最多两种，貌似默认情况就是2种
+# NUM_TYPE_CHOICES = [100]  
 INDEX_RANGE = range(100)
-SECOND_INDEX_RANGE = range(64)
+# INDEX_RANGE = range(20)
+SECOND_INDEX_RANGE = range(8)
+# SECOND_INDEX_RANGE = range(32)
 MUTATION_RATE_RANGE = (0.0, 100.0)
-SELECTIVE_ADVANTAGE_RANGE = (0.0, 1.0)
+# SELECTIVE_ADVANTAGE_RANGE = (0.0, 1.0)
+# SELECTIVE_ADVANTAGE_RANGE = (0.01, 0.2)
+SELECTIVE_ADVANTAGE_RANGE = (1, 20.0)
 DEATH_RATE_RANGE = (0.0, 1.0)
 AGGRESSION_RANGE = (0.0, 1.0)
 TIME_TO_NEW_CLONE_RANGE = (0.0, 15.0)
 BINARY_NAME = 'cancer_gillespie_simulation_no_display'
 
 
-result_data_dir = Path('/root/data/wja/project/CHESS.cpp/data_original/data')
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original/data')
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_test/data')
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_large/data')
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000_2to9/data')  #快速的大规模数据，1000*64*2条
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_ft_1000_1/data')  #少量的大size数据，100*8*2条
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_ft_1000_2/data')  #少量的大size数据，100*8*2条
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/tmp_tmp/data_100')  
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/tmp_tmp/data_1000') 
+
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000/data') 
+# result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_ft_1000/data_1')
+result_data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_ft_1000/data_2')
 
 
 def _format_values(values):
@@ -128,9 +146,14 @@ def _replace_output_dir(command_str, output_dir):
 def _build_command(binary_path, params, output_dir):
     command = [
         str(binary_path),
+        '-x','1000',
+        '-y','1000',
+        '-z','100',
+        '-M','1000',
         '-m', _format_values(params['mutation_rates']),
         '-b', _format_values(params['selective_advantages']),
-        '-d', _format_values(params['death_rates']),
+        # '-d', _format_values(params['death_rates']),
+        '-d', 0,
         '-r', _format_values(params['aggressions']),
         '-t', _format_values(params['time_to_new_clone']),
         '-o', str(output_dir) + '/',
@@ -149,7 +172,16 @@ def _run_command(command):
 
 def main():
     binary_path = (Path(__file__).resolve().parents[1] / BINARY_NAME).resolve()
-    error_log_path = Path('/root/data/wja/project/CHESS.cpp/data_original/error.log')
+    # error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original/error.log')
+    # error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original_test/error.log')
+    # error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original_large/error.log')
+    # error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000_2to9/error.log')
+    # error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original_ft_1000_1/error.log')
+    # error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original_ft_1000_2/error.log')
+    # error_log_path = Path('/root/wja/wja/project/CHESS.cpp/tmp_tmp/error.log')
+
+    error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000/error.log')
+    error_log_path = Path('/root/wja/wja/project/CHESS.cpp/data_original_ft_1000/error.log')
     if not binary_path.exists():
         raise FileNotFoundError(f'Binary not found: {binary_path}')
 
@@ -218,6 +250,14 @@ def main():
                         log_file.write(
                             f'index={idx}\nsecond_index={second_idx}\nreturn_code={rc}\ncommand={command_str}\noutput={output}\n\n'
                         )
+                else:
+                    keep_files = {'sim_params_0.csv', 'vaf_wholetumour_0.csv'}
+                    for child in output_dir.iterdir():
+                        if child.name not in keep_files:
+                            if child.is_dir():
+                                shutil.rmtree(child)
+                            else:
+                                child.unlink()
 
             # _write_commands(csv_path, commands_by_index)
 

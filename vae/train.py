@@ -29,7 +29,7 @@ import wandb
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
-    p.add_argument("--packed-file", type=str, default='/root/data/wja/project/CHESS.cpp/data/chess/train/packed_train_data.npz',
+    p.add_argument("--packed-file", type=str, default='/root/wja/wja/project/CHESS.cpp/data/pretrained_1000/packed_train_data.npz',
                    help="Path to packed_train_data.npz (optional). If omitted, tries default or falls back to a tiny random dataset.")
     p.add_argument("--epochs", type=int, default=3)
     p.add_argument("--lr", type=float, default=1e-3)

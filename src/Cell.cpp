@@ -56,7 +56,8 @@ Cell::Cell () // Default definition without given location and types.
     mTypeIndex(0),
     mpType(0),
     mpNode(0),
-    mTotalMutNum(0)
+    mTotalMutNum(100000)  // my modify
+    // mTotalMutNum(0)
   {}
 
 Cell::Cell (CellType* pType) // Mostly default but a given cell type.
@@ -68,7 +69,8 @@ Cell::Cell (CellType* pType) // Mostly default but a given cell type.
     mTypeIndex(0),
     mpType(pType),
     mpNode(0),
-    mTotalMutNum(0)
+    // mTotalMutNum(0)
+    mTotalMutNum(100000)   //my modify
   {
     mpType->RegisterMember(this);
   }

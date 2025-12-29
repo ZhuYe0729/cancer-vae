@@ -10,8 +10,9 @@ import matplotlib.pyplot as plt
 from model import TumorEvolutionModel
 from datasets import _parse_sim_params, _parse_vaf_distribution
 
-data_dir = Path('/root/data/wja/project/CHESS.cpp/data_original/data')
-result_dir = Path('/root/data/wja/project/CHESS.cpp/vae/vae_out')
+data_dir = Path('/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000/data')
+# result_dir = Path('/root/data/wja/project/CHESS.cpp/vae/vae_out')
+result_dir = Path('/root/wja/wja/project/CHESS.cpp/vae/vae_out')
 type_number = 1
 index = 0
 
@@ -22,7 +23,7 @@ try:
 except ImportError:  # SciPy might be unavailable in some environments
     linalg = None
 
-visual = False
+visual = True
 
 
 def _matrix_sqrt(matrix: np.ndarray) -> np.ndarray:
@@ -119,28 +120,20 @@ if __name__ == "__main__":
             sampled = torch.normal(mu, sigma).cpu().numpy()
 
         if visual:
-            base_save_dir = result_dir / f'{type_number}' / f'{index}' / 'base'
-            model_save_dir = result_dir / f'{type_number}' / f'{index}' / 'model'
-            base_save_dir.mkdir(parents=True, exist_ok=True)
-            model_save_dir.mkdir(parents=True, exist_ok=True)
+            combined_save_dir = result_dir / f'{type_number}' / f'{index}' / 'combined'
+            combined_save_dir.mkdir(parents=True, exist_ok=True)
             x_axis = np.arange(len(vaf_distribution))
 
-            fig, ax = plt.subplots(figsize=(8, 4))
-            ax.bar(x_axis, vaf_distribution, color='tab:blue')
-            ax.set_title(f'VAF Distribution #{second_index}')
+            fig, ax = plt.subplots(figsize=(10, 6))
+            ax.plot(x_axis, vaf_distribution, color='tab:blue', label='Base (Ground Truth)', linewidth=2)
+            ax.plot(x_axis, sampled, color='tab:orange', label='Model (Generated)', linewidth=2, linestyle='--')
+            
+            ax.set_title(f'VAF Distribution Comparison #{second_index}')
             ax.set_xlabel('Bin Index')
             ax.set_ylabel('Frequency')
+            ax.legend()
             fig.tight_layout()
-            fig.savefig(str(base_save_dir / f'{second_index}.png'), dpi=200)
-            plt.close(fig)
-
-            fig, ax = plt.subplots(figsize=(8, 4))
-            ax.bar(x_axis, sampled, color='tab:orange')
-            ax.set_title(f'Sampled Distribution #{second_index}')
-            ax.set_xlabel('Bin Index')
-            ax.set_ylabel('Frequency')
-            fig.tight_layout()
-            fig.savefig(str(model_save_dir / f'{second_index}.png'), dpi=200)
+            fig.savefig(str(combined_save_dir / f'{second_index}.png'), dpi=200)
             plt.close(fig)
 
         euc_distance = np.linalg.norm(sampled - vaf_distribution)

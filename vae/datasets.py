@@ -14,6 +14,7 @@ import os
 import csv
 import ast
 import numpy as np
+from tqdm import tqdm
 
 try:
     import torch
@@ -345,7 +346,7 @@ def pack_results_to_npz(root_dir: str, out_path: str) -> None:
     all_names: List[str] = []
     sample_types: List[str] = []
 
-    for name, dpath in entries:
+    for name, dpath in tqdm(entries, desc="Processing samples"):
         spath = os.path.join(dpath, 'sim_params_0.csv')
         vpath = os.path.join(dpath, 'vaf_distribution.csv')
         if not os.path.exists(spath) or not os.path.exists(vpath):
@@ -412,11 +413,11 @@ def pack_results_to_npz(root_dir: str, out_path: str) -> None:
 if __name__ == '__main__':
     # small demo: build dataset from repo-level results and print shapes
 
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    train_data_save_dir = os.path.join(repo_root, "data", "chess", "train")
-    results_dir = os.path.join(repo_root, 'data_original', 'data')
+    # train_data_save_dir = '/root/wja/wja/project/CHESS.cpp/data/pretrained_1000'  # 保存路径
+    train_data_save_dir = '/root/wja/wja/project/tsnpe_neurips/data_new'
+    results_dir = '/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000/data' # chess原始结果路径
     print('Results dir:', results_dir)
-    ds = VAFDataset(root_dir=results_dir)
+    # ds = VAFDataset(root_dir=results_dir)
     # print('Dataset length:', len(ds))
     # for i in range(min(5, len(ds))):
     #     x, y = ds[i]
@@ -430,7 +431,6 @@ if __name__ == '__main__':
     #     print('Packed train data already exists at:', train_data_file)
 
     # test load dataset from packed file
-    train_data_file = '/root/data/wja/project/CHESS.cpp/data/chess/train/packed_train_data.npz'
     ds = VAFDataset(packed_file=train_data_file, to_torch=True)
     print('Loaded dataset from packed file:', train_data_file)
     print('Dataset length:', len(ds))

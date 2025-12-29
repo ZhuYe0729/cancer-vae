@@ -2,8 +2,15 @@
     根据data数据，提取出vaf_wholetumour_0.csv的vaf列并进行排序，最后统计vaf在0-1之间的分布情况。
     vaf区间为 0.00-0.01, 0.01-0.02, ..., 0.99-1.00，共 100 个区间。
 """
-
-data_dir = '/root/data/wja/project/CHESS.cpp/data_original/data'
+visual = False
+# data_dir = '/root/data/wja/project/CHESS.cpp/data_original/data'
+# data_dir = '/root/wja/wja/project/CHESS.cpp/tmp_tmp'
+# data_dir = '/root/wja/wja/project/CHESS.cpp/tmp2'
+# data_dir = '/root/wja/wja/project/CHESS.cpp/data_original_pretrained_no_use/data'
+# data_dir = '/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000_2to9/data'
+# data_dir = '/root/wja/wja/project/CHESS.cpp/tmp_tmp/data_100'
+# data_dir = '/root/wja/wja/project/CHESS.cpp/tmp_tmp/data_1000'
+data_dir = '/root/wja/wja/project/CHESS.cpp/data_original_pretrained_1000/data'
 
 if __name__ == "__main__":
     import os
@@ -44,3 +51,18 @@ if __name__ == "__main__":
 
         distribution_df.to_csv(output_file_path, index=False)
         print(f"VAF distribution saved to {output_file_path}")
+
+        if visual:
+            import matplotlib.pyplot as plt
+
+            plt.figure(figsize=(10, 6))
+            plt.bar(distribution_df['vaf_range'], distribution_df['normalized'], width=0.8, color='skyblue')
+            plt.xticks(rotation=90)
+            plt.xlabel('VAF Range')
+            plt.ylabel('Normalized Frequency')
+            plt.title('VAF Distribution')
+            plt.tight_layout()
+            plt_path = os.path.join(folder_path, 'vaf_distribution.png')
+            plt.savefig(plt_path)
+            plt.close()
+            print(f"VAF distribution plot saved to {plt_path}")

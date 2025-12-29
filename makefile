@@ -45,7 +45,7 @@ R_PKG_SRC_FILES = $(CLASS_FILES_HEADER) $(CLASS_FILES_SOURCE) $(SRC_DIR)/extern_
 R_PKG_SRC_FILES_PATH = $(addprefix $(R_PKG_DIR)/, $(R_PKG_SRC_FILES))
 
 # Define build targets:
-TARGET = cancer_gillespie_simulation
+TARGET = cancer_gillespie_simulation_new1
 
 OTHER_TARGETS += $(R_PKG_NAME)_$(R_PKG_VERS).tar.gz
 

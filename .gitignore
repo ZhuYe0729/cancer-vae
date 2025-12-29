@@ -20,10 +20,19 @@ Info.plist
 
 r_package/.Rhistory
 
-data/
-data_original/
+
+data_no_use/
+data_original_ft_1000/
+data_original_pretrained_1000/
+tests/
+tmp_tmp_old/
 tmp/
 tmp2/
+tmp_tmp/
 vae/out/
 vae/wandb/
+vae/vae_out/
 thirdparts/
+data_original_large/
+data_original_no_use/
+data_original_test/
